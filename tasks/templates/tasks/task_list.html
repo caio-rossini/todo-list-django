@@ -1,0 +1,50 @@
+{% extends "tasks/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>TODO list</h1>
+    <a href="{% url 'tasks:task-create' %}" class="btn btn-primary">Add task</a>
+</div>
+
+{% for task in task_list %}
+<div class="border-bottom py-3">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <strong>{{ task.content }}</strong>
+            {% if task.is_done %}
+                <span class="text-success">Done</span>
+            {% else %}
+                <span class="text-danger">Not done</span>
+            {% endif %}
+
+            <div class="text-muted small mt-1">
+                Created: {{ task.created_at }}
+                {% if task.deadline %}
+                    <span class="text-danger ms-2">Deadline: {{ task.deadline }}</span>
+                {% endif %}
+            </div>
+
+            <div class="text-muted small mt-1">
+                Tags:
+                {% for tag in task.tags.all %}
+                    {{ tag.name }}
+                {% empty %}
+                    —
+                {% endfor %}
+                <a href="{% url 'tasks:task-update' task.pk %}" class="ms-2">Update</a>
+                <a href="{% url 'tasks:task-delete' task.pk %}" class="ms-1 text-danger">Delete</a>
+            </div>
+        </div>
+
+        <div>
+            <a href="{% url 'tasks:task-toggle' task.pk %}"
+               class="btn {% if task.is_done %}btn-secondary{% else %}btn-success{% endif %}">
+                {% if task.is_done %}Undo{% else %}Complete{% endif %}
+            </a>
+        </div>
+    </div>
+</div>
+{% empty %}
+    <p class="text-muted">No tasks yet. Add one!</p>
+{% endfor %}
+{% endblock %}
